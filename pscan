@@ -1,0 +1,66 @@
+#!/usr/bin/env perl
+use 5.014;
+use warnings;
+use autodie;
+use Getopt::Long;
+use Pod::Usage;
+
+# Command line options
+GetOptions( "h|?|help" => \( my $help ), )
+  or pod2usage(1);
+
+# Help
+pod2usage( -exitval => 0, -verbose => 2, -noperldoc => 1 ) if $help;
+
+my @ports = qw(22 80);
+my $proto = q/tcp/;
+
+# setup parent packet capture
+my $device_name = pcap_lookupdev( \my $err );
+pcap_lookupnet( $device_name, \my $net, \my $mask, \$err );
+my $pcap = pcap_open_live( $device_name, 1024, 0, 1000, \$err );
+
+my $packet_capture = pcap_next_ex( $pcap, \my %header, \my $packet );
+
+sub read_packet {
+    my $raw_data  = shift;
+    my $ip_data   = NetPacket::Ethernet::strip($ip_data);
+    my $ip_packat = NetPacket::IP->decode($ip_data);
+
+    if ( $ip_packet->{proto} == 6 ) {    # TCP
+        my $tcp  = NetPacket::TCP->decode( NetPacket::IP::strip($ip_data) );
+        my $port = $tcp->{src_port};
+
+        if ( $tpc->{flags} & SYN ) {
+            print "$port is open\n";
+        }
+    }
+}
+
+__END__
+
+=head1 NAME
+
+pscan - scan network ports for their status
+
+=head1 SYNOPSIS
+
+pscan [options]
+
+  options:
+    -h, -?, --help  brief help message
+
+=head1 DESCRIPTION
+
+A full description of the pscan and its features.
+
+May include numerous subsections (i.e., =head2, =head3, etc.).
+
+=head1 EXAMPLES
+
+Print out a short help message and exit:
+
+    pscan -h
+
+=cut
+
