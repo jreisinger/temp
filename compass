@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Storable;
+
+my $data_file = "$0.data";
+
+my ( $skill, $activity, $note ) = @ARGV;
+
+my %activities_weight = (
+    read_blog    => 3,
+    write_blog   => 5,
+    read_chapter => 4,
+    read_book    => 6,
+    write_script => 5,
+    write_prog   => 7,
+    write_app    => 9,
+);
+
+if ( -e $data_file ) {
+    my $hash_ref = retrieve $data_file;
+}
+
+my %table;
+store \%table, $data_file;
